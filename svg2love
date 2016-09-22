@@ -35,7 +35,9 @@ $content =~ s/>/>\n/msg;
 foreach $line (@lines) {
 	# print the cleansed line
 	chomp($line);
-	print "-- source SVG: " . $line . "\n";
+	if ($line ne '') {
+		print "-- source SVG: " . $line . "\n";
+	}
 	# parse the line
 	#  - rectangles
 	if($line =~ /^<rect/) {
