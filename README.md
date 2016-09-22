@@ -21,4 +21,4 @@ Primitive has the following output modes:
  * 2: __Rectangle mode__: use only axis-aligned rectangles.
  * 3: __Ellipse mode__: use only ellipses.
  * 4: __Circle mode__: use only regular circules.
- * 5: Rotated rectangle mode: use rotated rectangles. __Not working__.
+ * 5: __Rotated rectangle mode__: use only rotated rectangles.

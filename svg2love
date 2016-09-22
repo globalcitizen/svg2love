@@ -214,6 +214,7 @@ foreach $line (@lines) {
 		#  rotation angle
                 @match = $line =~ /[" ]rotate\((-?\d+(?:\.\d+)?)\)/;
                 ($angle) = @match;
+		$angle = $angle * 3.14159/180;		# convert degrees to radians
 		#  scale
                 @match = $line =~ /[" ]scale\((-?\d+(?:\.\d+)?)(?: (-?\d+(?:\.\d+)?))?\)/;
                 ($scale_x,$scale_y) = @match;
