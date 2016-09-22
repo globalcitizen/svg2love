@@ -28,4 +28,4 @@ This will read `file.svg`, show some debugging information, and add the translat
 
 ## Notes
 
-SVGs can have data that goes beyond the border of their define image. Primitive generates SVGs of this type. In order to display these cleanly, take a look at [love.graphics.setScissor()](https://love2d.org/wiki/love.graphics.setScissor).
+SVGs can have data that goes beyond the border of their defined image boundary. Primitive generates SVGs of this type. In order to display these cleanly, take a look at [love.graphics.setScissor()](https://love2d.org/wiki/love.graphics.setScissor).
