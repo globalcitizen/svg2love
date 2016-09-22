@@ -29,3 +29,14 @@ This will read `file.svg`, show some debugging information, and add the translat
 ## Notes
 
 SVGs can have data that goes beyond the border of their defined image boundary. Primitive generates SVGs of this type. In order to display these cleanly, take a look at [love.graphics.setScissor()](https://love2d.org/wiki/love.graphics.setScissor).
+
+## Demo
+
+A demonstration in the `demo` subdirectory includes loading the generated drawing commands from a lua source file, scaling them to an arbitrary window size and displaying them.
+
+You will need to have [LÖVE](https://love2d.org/wiki/Main_Page) installed to run it.
+
+To run it on Unix-like systems, enter the directory and type:
+```
+love .
+```
