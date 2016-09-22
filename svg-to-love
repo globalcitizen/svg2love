@@ -1,0 +1,240 @@
+#!/usr/bin/perl
+
+use POSIX;
+
+$|=1;
+
+my $file = $ARGV[0];
+if($file eq '') {
+	print STDERR "ERROR: No input SVG file specified.\n";
+	usage();
+	exit(1);
+}
+if(!-e $file) {
+	print STDERR "ERROR: Specified file '$file' does not exist.\n";
+	exit(1);
+}
+if(!-r $file) {
+	print STDERR "ERROR: Specified file '$file' is not readable.\n";
+	exit(1);
+}
+
+print STDERR "File is $file which exists and is readable.\n";
+
+open my $filehandle, $file or die "Could not open $file: $!";
+
+while( $line = <$filehandle>)  {   
+	# print the cleansed line
+	chomp($line);
+	print "-- source SVG: " . $line . "\n";
+	# parse the line
+	#  - rectangles
+	if($line =~ /^<rect/) {
+		print STDERR "============================== rectangle ===================================\n";
+		# SVG example:
+		#   <rect x="0" y="0" width="1024" height="680" fill="#79746f" />
+		# lua example:
+		#   love.graphics.setColor( red, green, blue, alpha )
+		#   love.graphics.rectangle( "fill", x, y, width, height, rx, ry, segments )
+
+		# first, we shorten to only include the rectangle
+		@tmp = $line =~ /(<rect.*?>)/;
+		($line) = @tmp;
+
+		# now, we get the parts
+
+		#  x (x_offset)
+		@match = $line =~ /x="(-?\d+(?:\.\d+)?)"/;
+		($x_offset) = @match;
+
+		#  y (y_offset)
+		@match = $line =~ /y="(-?\d+(?:\.\d+)?)"/;
+		($y_offset) = @match;
+
+		#  width (width)
+		@match = $line =~ /width="(\d+(?:\.\d+)?)"/;
+		($width) = @match;
+
+		#  height (height)
+		@match = $line =~ /height="(\d+(?:\.\d+)?)"/;
+		($height) = @match;
+
+		#  fill (red/green/blue)
+		@match = $line =~ /fill="#(..)(..)(..)"/;
+		($red,$green,$blue) = @match;
+		$red = hex($red);
+		$green = hex($green);
+		$blue = hex($blue);
+
+		#  fill-opacity (alpha)
+		@match = $line =~ /fill-opacity="(\d+(?:\.\d+)?)"/;
+		($alpha) = @match;
+		if($alpha eq '') {
+			$alpha=255;	# in the unspecified case, we assume full opacity
+		}
+		else {
+			$alpha = floor(255*$alpha);
+		}
+
+		print STDERR ("x_offset = $x_offset\n");
+		print STDERR ("y_offset = $y_offset\n");
+		print STDERR ("width    = $width\n");
+		print STDERR ("height   = $height\n");
+		print STDERR ("color    = $red,$green,$blue,$alpha\n");
+
+		# output
+		print "love.graphics.setColor($red,$green,$blue,$alpha)\n";
+		print "love.graphics.rectangle(\"fill\",$x_offset,$y_offset,$width,$height)\n";
+	}
+	elsif($line =~ /<ellipse /) {
+                print STDERR "============================== ellipse ===================================\n";
+                # SVG example:
+                #   <ellipse fill="#ffffff" fill-opacity="0.501961" cx="81" cy="16" rx="255" ry="22" />
+                # lua example:
+                #   love.graphics.setColor( red, green, blue, alpha )
+		#   love.graphics.ellipse( mode, x, y, radiusx, radiusy, segments )
+	
+		# first, shorten to include only the ellipse
+                @tmp = $line =~ /(<ellipse.*?>)/;
+                ($line) = @tmp;
+
+		# next, get the parts
+
+                #  cx (center_x)
+                @match = $line =~ /cx="(-?\d+(?:\.\d+)?)"/;
+                ($center_x) = @match;
+
+                #  cy (center_y)
+                @match = $line =~ /cy="(-?\d+(?:\.\d+)?)"/;
+                ($center_y) = @match;
+
+                #  rx (radius_x)
+                @match = $line =~ /rx="(\d+(?:\.\d+)?)"/;
+                ($radius_x) = @match;
+
+                #  ry (radius_y)
+                @match = $line =~ /ry="(\d+(?:\.\d+)?)"/;
+                ($radius_y) = @match;
+
+		#  fill (red/green/blue)
+		@match = $line =~ /fill="#(..)(..)(..)"/;
+		($red,$green,$blue) = @match;
+		$red = hex($red);
+		$green = hex($green);
+		$blue = hex($blue);
+
+		#  fill-opacity (alpha)
+		@match = $line =~ /fill-opacity="(\d+(?:\.\d+)?)"/;
+		($alpha) = @match;
+		$alpha = floor(255*$alpha);
+
+		print STDERR ("center_x = $center_x\n");
+		print STDERR ("center_y = $center_y\n");
+		print STDERR ("radius_x = $radius_x\n");
+		print STDERR ("radius_y = $radius_y\n");
+		print STDERR ("color    = $red,$green,$blue,$alpha\n");
+
+		# output
+		print "love.graphics.setColor($red,$green,$blue,$alpha)\n";
+		print "love.graphics.ellipse(\"fill\",$center_x,$center_y,$radius_x,$radius_y,50)\n";
+	}
+	elsif($line =~ /<polygon/) {
+                print STDERR "============================== polygon ===================================\n";
+                # SVG example:
+		#   <polygon fill="#6f614e" fill-opacity="0.501961" points="191,131 119,10 35,29" />
+                # lua example:
+                #   love.graphics.setColor( red, green, blue, alpha )
+                #   love.graphics.polygon( mode, vertices )   # where vertices is a list of x,y,x,y...
+
+                # first, we shorten to only include the polygon
+                @tmp = $line =~ /(<polygon.*?>)/;
+                ($line) = @tmp;
+
+		# debug
+		print STDERR $line . "\n";
+
+		#  fill (red/green/blue)
+		@match = $line =~ /fill="#(..)(..)(..)"/;
+		($red,$green,$blue) = @match;
+		$red = hex($red);
+		$green = hex($green);
+		$blue = hex($blue);
+
+		#  fill-opacity (alpha)
+		@match = $line =~ /fill-opacity="(\d+(?:\.\d+)?)"/;
+		($alpha) = @match;
+		$alpha = floor(255*$alpha);
+
+		#  points (vertices)
+		@match = $line =~ /points="([0-9, ]+)"/;
+		($vertices) = @match;
+		$vertices =~ s/ /,/g;
+
+		# output
+                #   love.graphics.setColor( red, green, blue, alpha )
+		print "love.graphics.setColor($red,$green,$blue,$alpha)\n";
+                #   love.graphics.polygon( mode, vertices )   # where vertices is a list of x,y,x,y...
+		print "love.graphics.polygon(\"fill\",{$vertices})\n";
+	}
+	elsif($line =~ /<\/svg>/) {
+		# ignore
+	}
+	elsif($line =~ /<\/g>/) {
+		print "love.graphics.pop()\n";
+	}
+	elsif($line =~ /<g /) {
+                print STDERR "============================== group ===================================\n";
+                # SVG example:
+		#   <g transform="translate(226 107) rotate(307) scale(3 11)">
+                # lua example:
+		#   love.graphics.push()
+		#   love.graphics.translate( dx, dy )
+		#   love.graphics.rotate( angle )
+		#   love.graphics.scale( sx, sy )
+
+                # first, we shorten to only include the group
+                @tmp = $line =~ /(<g .*?>)/;
+                ($line) = @tmp;	
+
+		# extract the goodies
+		#  translation offset
+                @match = $line =~ /translate\((-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)\)/;
+                ($offset_x,$offset_y) = @match;
+		#  rotation angle
+                @match = $line =~ /rotate\((-?\d+(?:\.\d+)?)\)/;
+                ($angle) = @match;
+		#  scale
+                @match = $line =~ /scale\((-?\d+(?:\.\d+)?)(?: (-?\d+(?:\.\d+)?))?\)/;
+                ($scale_x,$scale_y) = @match;
+
+		# output
+		print "love.graphics.push()\n";
+		print "love.graphics.translate($offset_x,$offset_y)\n";
+		if($angle ne '') {
+			print "love.graphics.rotate($angle)\n";
+		}
+		if($scale_y ne '') {
+			print "love.graphics.scale($scale_x,$scale_y)\n";
+		}
+		elsif($scale_x ne '') {
+			print "love.graphics.scale($scale_x,$scale_x)\n";
+		}
+	}
+	elsif($line =~ /<svg xmlns/ or $line =~ /^\s+$/ or line =~ /<.svg>/) {
+		# ignore
+		print STDERR "INFO: Ignored line: '$line'";
+	}
+	else {
+		print STDERR "LINE '$line' is unparseable!\n";
+		exit(1);
+	}
+	# end if we've hit the end of the SVG definition
+	last if my $line =~ /<\/svg>/;
+}
+exit(0);
+
+
+sub usage {
+	print "usage: $0 <svg_file>\n";
+	print " <svg_file>  The SVG file to convert to Lua/LÖVE code.\n";
+}
