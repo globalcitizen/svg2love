@@ -19,11 +19,20 @@ if(!-r $file) {
 	exit(1);
 }
 
-print STDERR "File is $file which exists and is readable.\n";
+my $content;
+open(my $fh, '<', $file) or die "Cannot open file '$file'.";
+{
+	local $/;
+	$content = <$fh>;
+}
+close($fh);
 
-open my $filehandle, $file or die "Could not open $file: $!";
+# ensure all closing tags also begin a new line
+$content =~ s/>/>\n/msg;
 
-while( $line = <$filehandle>)  {   
+@lines = split(/\n/m,$content);
+
+foreach $line (@lines) {
 	# print the cleansed line
 	chomp($line);
 	print "-- source SVG: " . $line . "\n";
@@ -44,30 +53,30 @@ while( $line = <$filehandle>)  {
 		# now, we get the parts
 
 		#  x (x_offset)
-		@match = $line =~ /x="(-?\d+(?:\.\d+)?)"/;
+		@match = $line =~ / x="(-?\d+(?:\.\d+)?)"/;
 		($x_offset) = @match;
 
 		#  y (y_offset)
-		@match = $line =~ /y="(-?\d+(?:\.\d+)?)"/;
+		@match = $line =~ / y="(-?\d+(?:\.\d+)?)"/;
 		($y_offset) = @match;
 
 		#  width (width)
-		@match = $line =~ /width="(\d+(?:\.\d+)?)"/;
+		@match = $line =~ / width="(\d+(?:\.\d+)?)"/;
 		($width) = @match;
 
 		#  height (height)
-		@match = $line =~ /height="(\d+(?:\.\d+)?)"/;
+		@match = $line =~ / height="(\d+(?:\.\d+)?)"/;
 		($height) = @match;
 
 		#  fill (red/green/blue)
-		@match = $line =~ /fill="#(..)(..)(..)"/;
+		@match = $line =~ / fill="#(..)(..)(..)"/;
 		($red,$green,$blue) = @match;
 		$red = hex($red);
 		$green = hex($green);
 		$blue = hex($blue);
 
 		#  fill-opacity (alpha)
-		@match = $line =~ /fill-opacity="(\d+(?:\.\d+)?)"/;
+		@match = $line =~ / fill-opacity="(\d+(?:\.\d+)?)"/;
 		($alpha) = @match;
 		if($alpha eq '') {
 			$alpha=255;	# in the unspecified case, we assume full opacity
@@ -101,30 +110,30 @@ while( $line = <$filehandle>)  {
 		# next, get the parts
 
                 #  cx (center_x)
-                @match = $line =~ /cx="(-?\d+(?:\.\d+)?)"/;
+                @match = $line =~ / cx="(-?\d+(?:\.\d+)?)"/;
                 ($center_x) = @match;
 
                 #  cy (center_y)
-                @match = $line =~ /cy="(-?\d+(?:\.\d+)?)"/;
+                @match = $line =~ / cy="(-?\d+(?:\.\d+)?)"/;
                 ($center_y) = @match;
 
                 #  rx (radius_x)
-                @match = $line =~ /rx="(\d+(?:\.\d+)?)"/;
+                @match = $line =~ / rx="(\d+(?:\.\d+)?)"/;
                 ($radius_x) = @match;
 
                 #  ry (radius_y)
-                @match = $line =~ /ry="(\d+(?:\.\d+)?)"/;
+                @match = $line =~ / ry="(\d+(?:\.\d+)?)"/;
                 ($radius_y) = @match;
 
 		#  fill (red/green/blue)
-		@match = $line =~ /fill="#(..)(..)(..)"/;
+		@match = $line =~ / fill="#(..)(..)(..)"/;
 		($red,$green,$blue) = @match;
 		$red = hex($red);
 		$green = hex($green);
 		$blue = hex($blue);
 
 		#  fill-opacity (alpha)
-		@match = $line =~ /fill-opacity="(\d+(?:\.\d+)?)"/;
+		@match = $line =~ / fill-opacity="(\d+(?:\.\d+)?)"/;
 		($alpha) = @match;
 		$alpha = floor(255*$alpha);
 
@@ -161,12 +170,12 @@ while( $line = <$filehandle>)  {
 		$blue = hex($blue);
 
 		#  fill-opacity (alpha)
-		@match = $line =~ /fill-opacity="(\d+(?:\.\d+)?)"/;
+		@match = $line =~ / fill-opacity="(\d+(?:\.\d+)?)"/;
 		($alpha) = @match;
 		$alpha = floor(255*$alpha);
 
 		#  points (vertices)
-		@match = $line =~ /points="([0-9, ]+)"/;
+		@match = $line =~ / points="([0-9, ]+)"/;
 		($vertices) = @match;
 		$vertices =~ s/ /,/g;
 
@@ -198,13 +207,13 @@ while( $line = <$filehandle>)  {
 
 		# extract the goodies
 		#  translation offset
-                @match = $line =~ /translate\((-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)\)/;
+                @match = $line =~ /[" ]translate\((-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)\)/;
                 ($offset_x,$offset_y) = @match;
 		#  rotation angle
-                @match = $line =~ /rotate\((-?\d+(?:\.\d+)?)\)/;
+                @match = $line =~ /[" ]rotate\((-?\d+(?:\.\d+)?)\)/;
                 ($angle) = @match;
 		#  scale
-                @match = $line =~ /scale\((-?\d+(?:\.\d+)?)(?: (-?\d+(?:\.\d+)?))?\)/;
+                @match = $line =~ /[" ]scale\((-?\d+(?:\.\d+)?)(?: (-?\d+(?:\.\d+)?))?\)/;
                 ($scale_x,$scale_y) = @match;
 
 		# output
@@ -220,9 +229,9 @@ while( $line = <$filehandle>)  {
 			print "love.graphics.scale($scale_x,$scale_x)\n";
 		}
 	}
-	elsif($line =~ /<svg xmlns/ or $line =~ /^\s+$/ or line =~ /<.svg>/) {
+	elsif($line =~ /<svg xmlns/ or $line =~ /^\s+$/ or $line =~ /<.svg>/ or $line =~ /^\s+/ or $line eq '') {
 		# ignore
-		print STDERR "INFO: Ignored line: '$line'";
+		print STDERR "INFO: Ignored line: '$line'\n";
 	}
 	else {
 		print STDERR "LINE '$line' is unparseable!\n";
