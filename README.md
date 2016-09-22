@@ -1,4 +1,4 @@
-# svg-to-love
+# svg2love
 
 Proof of concept *perl* script to convert simple SVGs to [LÖVE](https://love2d.org/wiki/Main_Page) graphic drawing commands.
 
