@@ -41,11 +41,16 @@ To run it on Unix-like systems, enter the directory and type:
 love .
 ```
 
-What it does is take the following SVG input file...
+What it does is take the following SVG input file from primitive...
 
 ![Demo source SVG](https://raw.githubusercontent.com/globalcitizen/svg2love/master/demo/demo-source.jpg)
 
-... and turn it in to a scaled and cropped image to fit a specified region of the window...
+... load the `svg2love`-converted form (ie. LÖVE draw commands) from a file, and turn the resulting image in to a scaled and cropped form to fit a specified region of the window...
 
 ![Demo screenshot](https://raw.githubusercontent.com/globalcitizen/svg2love/master/demo/screenshot.jpg)
 
+It may not look like much, but there seemed to be no other lua libraries out there to read SVGs and I'm not much of a graphics programmer, so I'm very glad it works!
+
+## To Do
+
+* Turn it in to a proper library: there's no sense in storing the converted commands really, SVG is smaller on disk and this reduces filesystem and programmer headache/complexity.
