@@ -25,3 +25,7 @@ svg2love file.svg >>some.lua
 ```
 
 This will read `file.svg`, show some debugging information, and add the translated LÖVE code output to the file `some.lua`. (You can shut the debug up by adding `2>/dev/null` before the `>>`.)
+
+## Notes
+
+SVGs can have data that goes beyond the border of their define image. Primitive generates SVGs of this type. In order to display these cleanly, take a look at [love.graphics.setScissor()](https://love2d.org/wiki/love.graphics.setScissor).
