@@ -40,3 +40,12 @@ To run it on Unix-like systems, enter the directory and type:
 ```
 love .
 ```
+
+What it does is take the following SVG input file...
+
+![Demo screenshot](https://raw.githubusercontent.com/globalcitizen/svg2love/master/demo/demo-source.svg)
+
+... and turn it in to a scaled and cropped image to fit a specified region of the window...
+
+![Demo screenshot](https://raw.githubusercontent.com/globalcitizen/svg2love/master/demo/screenshot.jpg)
+
