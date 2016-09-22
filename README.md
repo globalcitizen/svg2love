@@ -43,7 +43,7 @@ love .
 
 What it does is take the following SVG input file...
 
-![Demo screenshot](https://raw.githubusercontent.com/globalcitizen/svg2love/master/demo/demo-source.svg)
+![Demo source SVG](https://raw.githubusercontent.com/globalcitizen/svg2love/master/demo/demo-source.jpg)
 
 ... and turn it in to a scaled and cropped image to fit a specified region of the window...
 
