@@ -53,4 +53,4 @@ It may not look like much, but there seemed to be no other lua libraries out the
 
 ## To Do
 
-* Turn it in to a proper library written in Lua that is capable of loading files on the fly. (There's no sense in storing the converted commands really, SVG is smaller on disk and this reduces filesystem and programmer headache/complexity.)
+* Turn it in to a proper library written in Lua that is capable of loading files on the fly. (There's no sense in storing the converted commands really, SVG is smaller on disk and this reduces filesystem and programmer headache/complexity.) This is now underway [over here](https://github.com/globalcitizen/svglover).
